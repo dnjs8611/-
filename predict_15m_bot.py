@@ -947,7 +947,7 @@ def generate_report_and_retrain(exchange, start_time, end_time):
     print("[15mBot] Starting periodic retraining for all symbols...")
     for symbol in config.SYMBOLS:
         try:
-            collect_symbol_data_15m(exchange, symbol, days=365)
+            collect_symbol_data_15m(exchange, symbol, days=180)
             train_15m_model(symbol)
         except Exception as e:
             print(f"  [Error] Retraining failed for {symbol}: {e}")

@@ -85,7 +85,7 @@ def train_and_evaluate_regime(df, symbol, features):
 
 def train_symbol_model(symbol, is_retrain=False):
     """
-    특정 종목의 기본 전략(180일, 21피처)과 현재 전략(365일, 23피처) GradBoost 모델 세트를 모두 학습
+    특정 종목의 기본 전략(180일, 21피처)과 현재 전략(180일, 23피처) GradBoost 모델 세트를 모두 학습
     """
     sym_clean = symbol.replace('/', '_')
     csv_path = os.path.join(config.DATA_DIR, f"{sym_clean}.csv")
@@ -106,9 +106,9 @@ def train_symbol_model(symbol, is_retrain=False):
     gb_basic_u, acc_gb_basic_u = train_and_evaluate_gb_unified(df_basic, symbol, config.FEATURES_BASIC)
     gb_basic_r, acc_gb_basic_r = train_and_evaluate_regime(df_basic, symbol, config.FEATURES_BASIC)
 
-    # 2. 현재 전략 모델 학습 (최근 365일, FEATURES_CURRENT)
-    # 15분봉 기준 365일 = 365 * 24 * 4 = 35040개 봉
-    df_current = df.tail(365 * 24 * 4).copy()
+    # 2. 현재 전략 모델 학습 (최근 180일, FEATURES_CURRENT)
+    # 15분봉 기준 180일 = 180 * 24 * 4 = 17280개 봉
+    df_current = df.tail(180 * 24 * 4).copy()
     gb_current_u, acc_gb_current_u = train_and_evaluate_gb_unified(df_current, symbol, config.FEATURES_CURRENT)
     gb_current_r, acc_gb_current_r = train_and_evaluate_regime(df_current, symbol, config.FEATURES_CURRENT)
 
