@@ -509,32 +509,18 @@ def execute_predictions_for_cycle(exchange, current_cycle_time):
             # --- GradBoost 예측 ---
             gb_prob = float(gb_model.predict_proba(X_gb)[0][1])
             gb_side = 'PASS'
-            if current_regime == 'BULL':
-                if gb_prob >= 0.75:
-                    gb_side = 'LONG'
-            elif current_regime == 'BEAR':
-                if gb_prob <= 0.25:
-                    gb_side = 'SHORT'
-            else:  # SIDEWAYS
-                if gb_prob >= 0.75:
-                    gb_side = 'LONG'
-                elif gb_prob <= 0.25:
-                    gb_side = 'SHORT'
+            if gb_prob >= 0.75:
+                gb_side = 'LONG'
+            elif gb_prob <= 0.25:
+                gb_side = 'SHORT'
 
             # --- MLP 예측 ---
             mlp_prob = float(mlp_model.predict_proba(X_mlp)[0][1])
             mlp_side = 'PASS'
-            if current_regime == 'BULL':
-                if mlp_prob >= 0.75:
-                    mlp_side = 'LONG'
-            elif current_regime == 'BEAR':
-                if mlp_prob <= 0.25:
-                    mlp_side = 'SHORT'
-            else:  # SIDEWAYS
-                if mlp_prob >= 0.75:
-                    mlp_side = 'LONG'
-                elif mlp_prob <= 0.25:
-                    mlp_side = 'SHORT'
+            if mlp_prob >= 0.75:
+                mlp_side = 'LONG'
+            elif mlp_prob <= 0.25:
+                mlp_side = 'SHORT'
 
             # Check duplicate entry
             duplicate = any(p['symbol'] == symbol and p['timestamp'] == candle_time for p in preds)
