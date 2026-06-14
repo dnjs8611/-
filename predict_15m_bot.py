@@ -785,15 +785,35 @@ def evaluate_pending_predictions(exchange):
                     # Compute PnL for all models
                     for m in ['ensemble', 'xgb', 'rf', 'lgb', 'cat', 'et', 'gb', 'mlp', 'svm']:
                         side_k = 'predicted_side' if m == 'ensemble' else f'{m}_predicted_side'
-                        res_k = 'result' if m == 'ensemble' else f'{m}_result'
-                        pnl_usdt_k = 'pnl_usdt' if m == 'ensemble' else f'{m}_pnl_usdt'
-                        pnl_krw_k = 'pnl_krw' if m == 'ensemble' else f'{m}_pnl_krw'
+                        
+                        # Set up list of result and PnL keys to update for both standard and dashboard-compatible fields
+                        res_keys = []
+                        pnl_usdt_keys = []
+                        pnl_krw_keys = []
+                        
+                        if m == 'ensemble':
+                            res_keys = ['result']
+                            pnl_usdt_keys = ['pnl_usdt']
+                            pnl_krw_keys = ['pnl_krw']
+                        elif m == 'gb':
+                            res_keys = ['gb_result', 'gb_basic_result']
+                            pnl_usdt_keys = ['gb_pnl_usdt', 'gb_basic_pnl_usdt']
+                            pnl_krw_keys = ['gb_pnl_krw', 'gb_basic_pnl_krw']
+                        elif m == 'mlp':
+                            res_keys = ['mlp_result', 'gb_current_result']
+                            pnl_usdt_keys = ['mlp_pnl_usdt', 'gb_current_pnl_usdt']
+                            pnl_krw_keys = ['mlp_pnl_krw', 'gb_current_pnl_krw']
+                        else:
+                            res_keys = [f'{m}_result']
+                            pnl_usdt_keys = [f'{m}_pnl_usdt']
+                            pnl_krw_keys = [f'{m}_pnl_krw']
+                            
                         pred_side = p.get(side_k, 'LONG')
                         
                         if pred_side == 'PASS':
-                            p[res_k] = 'PASS'
-                            p[pnl_usdt_k] = 0.0
-                            p[pnl_krw_k] = 0.0
+                            for k in res_keys: p[k] = 'PASS'
+                            for k in pnl_usdt_keys: p[k] = 0.0
+                            for k in pnl_krw_keys: p[k] = 0.0
                             net_ret = 0.0
                         else:
                             # Evaluate SL and Profit Lock
@@ -805,9 +825,9 @@ def evaluate_pending_predictions(exchange):
                             pnl_usdt = margin_usdt * net_ret * 5  # 5x leverage
                             pnl_krw = margin_krw * net_ret * 5
                             
-                            p[res_k] = 'WIN' if m_win else 'LOSS'
-                            p[pnl_usdt_k] = pnl_usdt
-                            p[pnl_krw_k] = pnl_krw
+                            for k in res_keys: p[k] = 'WIN' if m_win else 'LOSS'
+                            for k in pnl_usdt_keys: p[k] = pnl_usdt
+                            for k in pnl_krw_keys: p[k] = pnl_krw
                             
                         if m == 'ensemble':
                             p['net_pnl_pct'] = net_ret
