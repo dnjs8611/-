@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+data/
+models/
+logs/
+backup_4models/
+catboost_info/
+*.pkl
+*.csv
+*.log
+*.bak
+scratch/
+dashboard.py.restored
